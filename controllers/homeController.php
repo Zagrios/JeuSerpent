@@ -2,9 +2,12 @@
 
 class homeController extends Controller{
 
+    private $style = "home";
+
     function init(){
         session_destroy();
-        parent::render("homeView");
+        $this->style = "home";
+        parent::render("homeView", "home");
     }
 
 }

@@ -1,6 +1,7 @@
 <?php
 
 require_once WEB_ROOT."models/Player.php";
+require_once WEB_ROOT."models/Database.php";
 
 class Game{
 
@@ -34,18 +35,49 @@ class Game{
     }
 
     public function getWinner(){
-        if($this->p1->getScore() == 50){ return $this->p1; }
-        if($this->p2->getScore() == 50){ return $this->p2; }
+        if($this->p1->isWinner()){ return $this->p1; }
+        if($this->p2->isWinner()){ return $this->p2; }
         return false;
+    }
+
+    public function getLooser(){
+        $winner = $this->getWinner();
+        if($winner === false){ return false; }
+        return $winner->getName() == $this->p1->getName() ? $this->p2 : $this->p1;
+    }
+
+    public function save(): void{
+        $winner = $this->getWinner();
+        if($this->getWinner() === false){ return; }
+        $looser = $this->getLooser();
+        $data = ['winner' => $winner->getName(), 'looser' => $looser->getName()];
+        Database::getInstance()->insertData("INSERT INTO game_history (winner, looser) VALUES (:winner, :looser)", $data);
     }
 
     public function gridToHtml(): string{
         $html = "<table>";
         $count = 1;
+        $p1Score = $this->p1->getScore();
+        $p2Score = $this->p2->getScore();
         for($i = 0; $i < 5; $i++){
             $html .= "<tr>";
             for($j = 0; $j < 10; $j++){
-                $html .= "<td>".$count."</td>";
+                if($p1Score == $count && $p2Score == $count){
+                    $html .= "<td class='both'>".$count."</td>";
+                }
+                else if($p1Score == $count){
+                    $html .= "<td class='p1'>".$count."</td>";
+                }
+                else if($p2Score == $count){
+                    $html .= "<td class='p2'>".$count."</td>";
+                }
+                else if($count == 50){
+                    $html .= "<td class='finish'>".$count."</td>";
+                }
+                else{
+                    $html .= "<td>".$count."</td>";
+                }
+                
                 $count += 1;
             }
             $html .= "</tr>";

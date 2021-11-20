@@ -11,7 +11,7 @@ class gameController extends Controller{
     }
 
     public function init(){
-        parent::render("gameView");
+        parent::render("gameView", "game");
     }
 
     private function loadGame(){
@@ -29,7 +29,8 @@ class gameController extends Controller{
     }
 
     public function endGame(){
-        parent::render("endGameView");
+        $this->game->save();
+        header("Location: endgame");
     }
 
     public function getGame(): Game{
