@@ -7,10 +7,12 @@ require_once WEB_ROOT."controllers/Controller.php";
 
 $params = explode('/', $_GET['p']);
 $controller = isset($params[0]) && !empty($params[0]) ? $params[0] : 'home';
-$action = isset($params[1]) && !empty($params[1]) ? $params[1] : 'init';
+$action = isset($_POST['action']) && !empty($_POST['action']) ? $_POST['action'] : 'init';
 
 
 require_once WEB_ROOT."controllers/".$controller."Controller.php";
+
+session_start();
 
 $controller = $controller.'Controller';
 $controller = new $controller();
